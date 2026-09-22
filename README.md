@@ -8,10 +8,10 @@ El módulo permite realizar operaciones CRUD completas: crear nuevos pedidos, co
 
 ## Integrantes
 
-- Vanessa Marín Mesa - [Rol]
-- Danna Paulina García Jiménez - [Rol]
-- Luisa Fernanda Choachí Salazar - [Rol]
-- María Fernanda Parada Salazar - [Rol]
+- Vanessa Marín Mesa 
+- Danna Paulina García Jiménez 
+- Luisa Fernanda Choachí Salazar 
+- María Fernanda Parada Salazar 
 
 * **Profesor:** Fernando Higuita Betancur
 * **Materia:** Arquitectura de Sistemas - Universidad Católica Luis Amigó
