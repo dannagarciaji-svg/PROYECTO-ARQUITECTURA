@@ -1,58 +1,48 @@
-# [Nombre del proyecto]
+# Sistema Fábrica de Suelas - Módulo de Órdenes y Pedidos
 
-## Descripcion
+## Descripción
 
-[Describe brevemente el problema que resuelve el proyecto, su proposito y el alcance de esta iniciativa.]
+El sistema propuesto tiene como objetivo apoyar la gestión de una variedad de procesos relacionados con la operación de una fábrica de suelas. Dentro de dichos procesos, el **Módulo de Órdenes y Pedidos** representa una parte crucial ya que conecta diferentes elementos del negocio: asocia un cliente con la información de las suelas solicitadas (cantidad y color) y descuenta directamente de las existencias del inventario.
+
+El módulo permite realizar operaciones CRUD completas: crear nuevos pedidos, consultar los registrados, modificar la información de una orden, cambiar su estado y eliminar pedidos (restaurando las unidades al inventario).
 
 ## Integrantes
 
-- [Nombre completo - Rol]
-- [Nombre completo - Rol]
+- Vanessa Marín Mesa - [Rol]
+- Danna Paulina García Jiménez - [Rol]
+- Luisa Fernanda Choachí Salazar - [Rol]
+- María Fernanda Parada Salazar - [Rol]
 
-## Tecnologias
+* **Profesor:** Fernando Higuita Betancur
+* **Materia:** Arquitectura de Sistemas - Universidad Católica Luis Amigó
 
-- [Tecnologia o lenguaje]
-- [Framework o biblioteca]
-- [Base de datos u otro servicio]
+## Tecnologías
 
-## Instrucciones de ejecucion
+- **Presentación:** Jinja2, HTML, Tailwind CSS, FontAwesome
+- **Backend / Procesamiento:** Python, Flask
+- **Conexión BD:** Pyodbc
+- **Base de datos:** Microsoft SQL Server
 
-> El proyecto se encuentra en su etapa inicial. Completa estas instrucciones cuando se definan las herramientas y los comandos de ejecucion.
+## Instrucciones de ejecución
 
-1. [Requisito previo]
-2. [Comando de instalacion, si aplica]
-3. [Comando para ejecutar el proyecto]
-4. [Comando para ejecutar las pruebas]
+> El proyecto se encuentra en su etapa inicial. Completa estas instrucciones cuando se definan las herramientas y los comandos de ejecución.
+
+1. Contar con Python 3.x e instalar Microsoft SQL Server
+2. Instalar dependencias requeridas (Flask, Pyodbc)
+3. Ejecutar el archivo principal de la aplicación (`python app_suelas.py`)
+4. Acceder a la interfaz web desde el navegador local.
 
 ## Estructura de carpetas
 
 ```text
 .
-├── src/                  # Codigo fuente de la aplicacion
+├── src/                  # Código fuente de la aplicación (Flask, templates HTML)
 ├── docs/
-│   ├── arquitectura.md   # Descripcion de la arquitectura
-│   ├── diagramas/        # Diagramas de la solucion
+│   ├── arquitectura.md   # Descripción detallada de la arquitectura y escenarios
+│   ├── diagramas/        # Diagramas de la solución (Capas, Casos de Uso, Secuencia, Clases)
 │   └── adr/              # Registros de decisiones de arquitectura
 ├── tests/                # Pruebas automatizadas
-├── resources/            # Recursos necesarios para el proyecto
-├── README.md             # Documentacion principal
+├── resources/            # Recursos necesarios para el proyecto (imágenes, scripts SQL)
+├── README.md             # Documentación principal
 ├── CHANGELOG.md          # Historial de cambios
 └── .gitignore            # Archivos excluidos del control de versiones
-```
-
-## Arquitectura
-
-[Resume aqui el estilo arquitectonico, los componentes principales, sus responsabilidades y la forma en que se comunican. Consulta [docs/arquitectura.md](docs/arquitectura.md) para el detalle.]
-
-## Estado actual
-
-- [ ] Estructura inicial creada
-- [ ] Tecnologias seleccionadas
-- [ ] Arquitectura definida
-- [ ] Primera funcionalidad implementada
-
-## Trabajo futuro
-
-- [Proximo objetivo]
-- [Funcionalidad pendiente]
-- [Mejora tecnica o de calidad]

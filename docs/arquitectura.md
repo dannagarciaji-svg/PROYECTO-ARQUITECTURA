@@ -1,87 +1,74 @@
-# Arquitectura del proyecto
+# Arquitectura del Sistema - Módulo de Órdenes y Pedidos
 
-> Plantilla para documentar la arquitectura de la solucion. Completa las secciones a medida que se tomen decisiones.
+## 1. Problemas Arquitectónicos Actuales
 
-## 1. Contexto y objetivos
+* **Alto acoplamiento entre la aplicación y la base de datos:** Algunas rutas del backend realizan directamente las operaciones de acceso a la base de datos mediante Pyodbc mientras contienen lógica de procesamiento.
+* **Poca separación de responsabilidades:** Rutas como `/crear_pedido` concentran la recepción de datos, validaciones, consulta de stock, modificación de inventario y registro de pedidos dentro del mismo flujo.
+* **Dependencia directa del servicio de base de datos:** El funcionamiento del módulo depende totalmente de la disponibilidad de SQL Server.
+* **Mantenibilidad reducida:** Realizar cambios futuros aumenta la posibilidad de afectar funciones que actualmente operan correctamente.
 
-### Problema
+---
 
-[Describe el problema o necesidad que aborda el sistema.]
+## 2. Atributos de Calidad Priorizados
 
-### Objetivos
+### Mantenibilidad
+Se busca separar la lógica de presentación, el acceso a datos y la lógica de negocio para permitir modificaciones independientes en las rutas `/crear_pedido`, `/actualizar_pedido`, `/eliminar_pedido` y `/actualizar_estado_pedido`.
 
-- [Objetivo funcional o de negocio]
-- [Objetivo tecnico]
+### Confiabilidad
+Garantizar la consistencia entre los registros de pedidos e inventario mediante un manejo adecuado de transacciones y errores. Si la creación falla, las unidades descontadas del inventario no deben guardarse, y al eliminar un pedido se deben restaurar las unidades.
 
-### Alcance
+### Eficiencia de Ejecución
+Controlar las operaciones simultáneas sobre el campo `stock_disponible` de la tabla `Suelas` para evitar sobreventa o registros con inventario insuficiente cuando varios usuarios operan al mismo tiempo.
 
-[Indica que incluye y que queda fuera del alcance de esta version.]
+---
 
-## 2. Estilo arquitectonico
+## 3. Escenarios de Calidad
 
-[Describe el estilo elegido: monolito modular, capas, hexagonal, microservicios, eventos u otro.]
+### Escenario 1: Mantenibilidad
+* **Estímulo:** Se necesita realizar un cambio en la lógica de modificación de un pedido.
+* **Fuente del estímulo:** Desarrollador encargado de modificar el sistema.
+* **Entorno:** Sistema en desarrollo.
+* **Artefacto:** Backend del módulo (`/crear_pedido`, `/actualizar_pedido` y acceso a datos).
+* **Respuesta esperada:** Permitir la modificación alterando solo la lógica correspondiente, sin afectar la base de datos o interfaz.
+* **Medida de respuesta:** El cambio se realiza sin impactar otras partes del sistema.
 
-### Justificacion
+### Escenario 2: Confiabilidad
+* **Estímulo:** Error al guardar alguna operación al crear un pedido o actualizar inventario.
+* **Fuente del estímulo:** Solicitud realizada por un usuario desde la interfaz web.
+* **Entorno:** Registro de pedido con transacciones sobre SQL Server.
+* **Artefacto:** Ruta `/crear_pedido` y tablas `Suelas`, `Pedidos` y `DetallePedido`.
+* **Respuesta esperada:** Controlar el error y revertir los cambios parciales.
+* **Medida de respuesta:** No se registran pedidos sin detalle ni queda inventario descontado si el proceso falla.
 
-[Explica por que este estilo se ajusta al contexto, al equipo y a las restricciones del proyecto.]
+### Escenario 3: Eficiencia de Ejecución
+* **Estímulo:** Dos usuarios realizan pedidos simultáneos de la misma suela con stock limitado.
+* **Fuente del estímulo:** Dos solicitudes al mismo tiempo desde la interfaz.
+* **Entorno:** Operación normal del sistema.
+* **Artefacto:** Ruta `/crear_pedido`, tabla `Suelas` (`stock_disponible`), `Pedidos` y `DetallePedido`.
+* **Respuesta esperada:** Gestionar las solicitudes asegurando que la cantidad no supere el stock disponible.
+* **Medida de respuesta:** El inventario final coincide con los pedidos procesados y `stock_disponible` no queda negativo.
 
-## 3. Requisitos no funcionales
+---
 
-| Requisito | Descripcion | Criterio de aceptacion |
-| --- | --- | --- |
-| Rendimiento | [Tiempo de respuesta o capacidad esperada] | [Como se verificara] |
-| Disponibilidad | [Nivel esperado] | [Como se verificara] |
-| Seguridad | [Controles y amenazas consideradas] | [Como se verificara] |
-| Escalabilidad | [Forma de crecimiento esperada] | [Como se verificara] |
-| Mantenibilidad | [Convenciones y facilidad de cambio] | [Como se verificara] |
-| Observabilidad | [Logs, metricas y trazas] | [Como se verificara] |
+## 4. Especificación del Caso de Uso Principal (CU-01 Crear Pedido)
 
-## 4. Componentes
+* **Actor Principal:** Usuario Operador
+* **Actor Secundario:** SQL Server
+* **Propósito:** Registrar un pedido y actualizar las existencias de suelas.
+* **Precondiciones:** El cliente debe estar registrado y la suela debe existir en el catálogo.
+* **Flujo Principal:**
+  1. El operador selecciona cliente, referencia de suela, color y cantidad.
+  2. El sistema valida que la cantidad sea un entero positivo.
+  3. *(Include)* Consulta el stock disponible en SQL Server.
+  4. Confirma existencias suficientes.
+  5. Inserta el pedido y su detalle.
+  6. Descuenta la cantidad vendida del stock y confirma la transacción.
+* **Flujos Alternativos:**
+  * **A1 (Datos inválidos):** Si la cantidad es cero o negativa, muestra mensaje de error.
+  * **A2 (Stock insuficiente):** Cancela la inserción y despliega la alerta "Stock insuficiente en bodega".
 
-| Componente | Responsabilidad | Interfaces o dependencias |
-| --- | --- | --- |
-| [Componente] | [Responsabilidad principal] | [API, modulo o servicio] |
+---
 
-### Flujo principal
+## 5. Conclusiones
 
-[Describe paso a paso el flujo principal de una operacion relevante.]
-
-## 5. Comunicacion e integraciones
-
-[Documenta protocolos, formatos, APIs externas, eventos, colas y mecanismos de autenticacion.]
-
-## 6. Estilos y convenciones
-
-### Codigo
-
-[Convenciones de nombres, estructura de modulos, formato y reglas de calidad.]
-
-### APIs
-
-[Convenciones de rutas, versionado, respuestas y manejo de errores.]
-
-### Documentacion y diagramas
-
-[Formato y ubicacion de diagramas. Usa `docs/diagramas/` para almacenarlos.]
-
-## 7. Modelo de datos
-
-[Describe las entidades principales, sus relaciones y el almacenamiento utilizado, si aplica.]
-
-## 8. Decisiones tecnicas
-
-[Resume las decisiones relevantes y enlaza los registros detallados en `docs/adr/`.]
-
-| Decision | Alternativas consideradas | Motivo |
-| --- | --- | --- |
-| [Decision] | [Alternativas] | [Justificacion] |
-
-## 9. Riesgos y restricciones
-
-- [Riesgo o restriccion]
-- [Mitigacion prevista]
-
-## 10. Diagramas
-
-- [Diagrama de contexto](diagramas/diagrama-contexto.md)
-- [Diagrama de componentes](diagramas/diagrama-componentes.md)
+La re-arquitectura del módulo garantiza una separación limpia de responsabilidades[cite: 2]. Priorizar Mantenibilidad, Confiabilidad y Eficiencia de Ejecución asegurará la estabilidad del sistema a medida que la fábrica de suelas escale sus operaciones.
