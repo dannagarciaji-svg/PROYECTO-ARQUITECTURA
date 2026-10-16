@@ -10,7 +10,7 @@ El módulo permite realizar operaciones CRUD completas: crear nuevos pedidos, co
 
 - Vanessa Marín Mesa 
 - Danna Paulina García Jiménez 
-- Luisa Fernanda Choachí Salazar 
+- Luisa Fernanda Choachi Salazar 
 - María Fernanda Parada Salazar 
 
 * **Profesor:** Fernando Higuita Betancur
