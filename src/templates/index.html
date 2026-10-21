@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FABRICASUELAS - Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#121214] text-gray-100 min-h-screen flex">
+
+    <div class="w-64 bg-[#18181c] border-r border-gray-800 flex flex-col justify-between">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8 px-2">
+                <span class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">F</span>
+                <span class="font-bold text-lg tracking-wide text-white">FABRICASUELAS</span>
+            </div>
+
+            <nav class="space-y-1">
+                <a href="/seccion/clientes" class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-sm {% if seccion == 'clientes' %} bg-gradient-to-r from-purple-600/20 to-pink-600/10 text-purple-400 border border-purple-500/20 {% else %} text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 {% endif %}">
+                    <i class="fa-solid fa-users text-base"></i>
+                    Clientes Corporativos
+                </a>
+
+                <a href="/seccion/pedidos" class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-sm {% if seccion == 'pedidos' %} bg-gradient-to-r from-purple-600/20 to-pink-600/10 text-purple-400 border border-purple-500/20 {% else %} text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 {% endif %}">
+                    <i class="fa-solid fa-box-open text-base"></i>
+                    Pedidos y Stock
+                </a>
+
+                <a href="/seccion/suelas" class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-sm {% if seccion == 'suelas' %} bg-gradient-to-r from-purple-600/20 to-pink-600/10 text-purple-400 border border-purple-500/20 {% else %} text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 {% endif %}">
+                    <i class="fa-solid fa-layer-group text-base"></i>
+                    Catálogo e Inventario
+                </a>
+
+                <a href="/seccion/reportes" class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-sm {% if seccion == 'reportes' %} bg-gradient-to-r from-purple-600/20 to-pink-600/10 text-purple-400 border border-purple-500/20 {% else %} text-gray-400 hover:bg-gray-800/50 hover:text-gray-200 {% endif %}">
+                    <i class="fa-solid fa-chart-pie text-base"></i>
+                    Módulo de Reportes
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-gray-800/60 text-center text-xs text-gray-500">
+            Sistema de Producción &copy; 2026
+        </div>
+    </div>
+
+    <div class="flex-1 p-10 overflow-y-auto">
+
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Panel de Gestión Integrada de Suelas</h1>
+                <p class="text-gray-400 text-sm mt-1">Control de pedidos de fábrica, almacén y clientes corporativos.</p>
+            </div>
+            <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-2 rounded-xl text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                SQL Server Conectado
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-6 p-4 rounded-xl border flex items-center gap-3 text-sm font-medium {% if category == 'error' %} bg-red-500/10 border-red-500/20 text-red-400 {% else %} bg-emerald-500/10 border-emerald-500/20 text-emerald-400 {% endif %}">
+                        <i class="fa-solid {% if category == 'error' %} fa-triangle-exclamation {% else %} fa-circle-check {% endif %} text-base"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 relative overflow-hidden">
+                <div class="text-3xl font-black text-white mb-1">{{ kpi_por_pedidos }}</div>
+                <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">Por pedidos</div>
+            </div>
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 relative overflow-hidden">
+                <div class="text-3xl font-black text-white mb-1">{{ kpi_total_referencias }}</div>
+                <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total referencias</div>
+            </div>
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 relative overflow-hidden">
+                <div class="text-3xl font-black text-white mb-1">{{ kpi_total_pedidos }}</div>
+                <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total de pedidos</div>
+            </div>
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 relative overflow-hidden">
+                <div class="text-3xl font-black text-white mb-1">{{ kpi_modulo_reportes }}</div>
+                <div class="text-xs font-medium text-gray-400 uppercase tracking-wider">Módulo de reportes</div>
+            </div>
+        </div>
+
+        {% if seccion == 'clientes' %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 h-fit">
+                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-purple-400"></i> Registrar / Editar Cliente
+                </h2>
+
+                <form id="form-cliente" action="/crear_cliente" method="post" class="space-y-4">
+                    <input type="hidden" name="id_cliente" id="input-cliente-id">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Nombre Empresa</label>
+                        <input type="text" name="nombre" id="input-cliente-nombre" placeholder="Ej: Calzado Bucaramanga S.A.S." oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ.\s]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">NIT</label>
+                        <input type="text" name="nit" id="input-cliente-nit" placeholder="Ej: 900123456" oninput="this.value = this.value.replace(/[^0-9\-]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Teléfono Celular</label>
+                        <input type="text" name="telefono" id="input-cliente-telefono" placeholder="Ej: 3157778899" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
+                    </div>
+
+                    <button type="submit" id="btn-cliente-submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-xl text-sm transition">
+                        Guardar Cliente Corporativo
+                    </button>
+                    <button type="button" id="btn-cliente-cancelar" onclick="resetFormCliente()" class="w-full bg-gray-800 text-gray-300 font-semibold py-2 rounded-xl text-xs transition hidden mt-2">
+                        Cancelar Edición
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 bg-[#18181c] p-6 rounded-2xl border border-gray-800">
+                <h2 class="text-xl font-bold text-white mb-6">Clientes Corporativos Registrados</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-xs font-bold uppercase text-gray-400">
+                                <th class="pb-3">ID</th>
+                                <th class="pb-3">Nombre Empresa</th>
+                                <th class="pb-3">NIT</th>
+                                <th class="pb-3">Teléfono</th>
+                                <th class="pb-3 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800/50 text-sm text-gray-300">
+                            {% for c in clientes %}
+                            <tr>
+                                <td class="py-3.5 font-semibold text-gray-500">#{{ c[0] }}</td>
+                                <td class="py-3.5 text-white font-medium">{{ c[1] }}</td>
+                                <td class="py-3.5">{{ c[2] }}</td>
+                                <td class="py-3.5">{{ c[3] if c[3] else 'No asignado' }}</td>
+                                <td class="py-3.5 text-right space-x-3">
+                                    <button onclick="editarCliente('{{ c[0] }}', '{{ c[1] }}', '{{ c[2] }}', '{{ c[3] }}')" class="text-purple-400 hover:text-purple-300 text-xs font-semibold">
+                                        <i class="fa-solid fa-pen"></i> Traer Datos
+                                    </button>
+                                    <form action="/eliminar_cliente" method="post" class="inline" onclick="return confirm('¿Seguro que deseas eliminar este cliente de forma definitiva?')">
+                                        <input type="hidden" name="id_cliente" value="{{ c[0] }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-xs font-semibold">
+                                            <i class="fa-solid fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">No hay clientes corporativos registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function editarCliente(id, nombre, nit, telefono) {
+                document.getElementById('form-cliente').action = '/actualizar_cliente';
+                document.getElementById('input-cliente-id').value = id;
+                document.getElementById('input-cliente-nombre').value = nombre;
+                document.getElementById('input-cliente-nit').value = nit;
+                document.getElementById('input-cliente-telefono').value = telefono;
+                document.getElementById('btn-cliente-submit').innerText = 'Actualizar Datos de Cliente';
+                document.getElementById('btn-cliente-cancelar').classList.remove('hidden');
+            }
+
+            function resetFormCliente() {
+                document.getElementById('form-cliente').action = '/crear_cliente';
+                document.getElementById('input-cliente-id').value = '';
+                document.getElementById('form-cliente').reset();
+                document.getElementById('btn-cliente-submit').innerText = 'Guardar Cliente Corporativo';
+                document.getElementById('btn-cliente-cancelar').classList.add('hidden');
+            }
+        </script>
+        {% endif %}
+
+        {% if seccion == 'pedidos' %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 h-fit">
+                <h2 class="text-xl font-bold text-white mb-6" id="titulo-form-pedido">
+                    <i class="fa-solid fa-cart-plus text-purple-400"></i> Crear Pedido
+                </h2>
+
+                <form id="form-pedido" action="/crear_pedido" method="post" class="space-y-4">
+                    <input type="hidden" name="id_pedido" id="input-pedido-id">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Cliente Corporativo</label>
+                        <select name="id_cliente" id="select-pedido-cliente" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                            <option value="">-- Selecciona un Cliente --</option>
+                            {% for c in clientes %}
+                            <option value="{{ c[0] }}">{{ c[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Suela (Catálogo)</label>
+                        <select name="id_suela" id="select-pedido-suela" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                            <option value="">-- Selecciona Referencia y Talla --</option>
+                            {% for s in suelas %}
+                            <option value="{{ s[0] }}" data-color="{{ s[5] }}">{{ s[1] }} (Talla: {{ s[2] }} | Stock: {{ s[3] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Color</label>
+                            <input type="text" name="color" id="input-pedido-color" placeholder="Se asigna según la suela" readonly required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Cantidad</label>
+                            <input type="number" name="cantidad" id="input-pedido-cantidad" placeholder="Ej: 50" min="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-pedido-submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-xl text-sm transition">
+                        Procesar y Descontar Stock
+                    </button>
+                    <button type="button" id="btn-pedido-cancelar" onclick="resetFormPedido()" class="w-full bg-gray-800 text-gray-300 font-semibold py-2 rounded-xl text-xs transition hidden mt-2">
+                        Cancelar Edición de Orden
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 bg-[#18181c] p-6 rounded-2xl border border-gray-800">
+                <h2 class="text-xl font-bold text-white mb-6">Tablas de Control de Pedidos</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-xs font-bold uppercase text-gray-400">
+                                <th class="pb-3">ID</th>
+                                <th class="pb-3">Fecha</th>
+                                <th class="pb-3">Cliente</th>
+                                <th class="pb-3">Referencia</th>
+                                <th class="pb-3">Pares</th>
+                                <th class="pb-3">Color</th>
+                                <th class="pb-3">Estado</th>
+                                <th class="pb-3 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800/50 text-sm text-gray-300">
+                            {% for p in pedidos %}
+                            <tr>
+                                <td class="py-3.5 font-semibold text-purple-400">#{{ p[0] }}</td>
+                                <td class="py-3.5 text-gray-400">{{ p[1] }}</td>
+                                <td class="py-3.5 text-white font-medium">{{ p[2] }}</td>
+                                <td class="py-3.5">{{ p[3] }} (T:{{ p[7] }})</td>
+                                <td class="py-3.5 font-bold">{{ p[4] }}</td>
+                                <td class="py-3.5 text-gray-400">{{ p[5] }}</td>
+                                <td class="py-3.5">
+                                    <form action="/actualizar_estado_pedido" method="post" class="inline">
+                                        <input type="hidden" name="id_pedido" value="{{ p[0] }}">
+                                        <select name="estado" onchange="this.form.submit()" class="bg-[#121214] border border-gray-800 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none text-white transition {% if p[6] == 'Entregado' %} text-emerald-400 border-emerald-500/20 {% else %} text-amber-400 border-amber-500/20 {% endif %}">
+                                            <option value="Pendiente" {% if p[6] == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                                            <option value="Entregado" {% if p[6] == 'Entregado' %}selected{% endif %}>Entregado</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td class="py-3.5 text-right space-x-2">
+                                    <button onclick="editarPedido('{{ p[0] }}', '{{ p[8] }}', '{{ p[9] }}', '{{ p[5] }}', '{{ p[4] }}')" class="text-purple-400 hover:text-purple-300 text-xs">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <form action="/eliminar_pedido" method="post" class="inline" onclick="return confirm('¿Deseas cancelar el pedido y retornar los pares al stock?')">
+                                        <input type="hidden" name="id_pedido" value="{{ p[0] }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-xs">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-8 text-gray-500">No hay órdenes de pedido registradas en la base de datos.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const selectorSuelaPedido = document.getElementById('select-pedido-suela');
+            const campoColorPedido = document.getElementById('input-pedido-color');
+
+            function actualizarColorPedido() {
+                const opcionSeleccionada = selectorSuelaPedido.options[selectorSuelaPedido.selectedIndex];
+
+                if (opcionSeleccionada && opcionSeleccionada.value !== '') {
+                    campoColorPedido.value = opcionSeleccionada.dataset.color || '';
+                } else {
+                    campoColorPedido.value = '';
+                }
+            }
+            
+
+            selectorSuelaPedido.addEventListener('change', actualizarColorPedido);
+
+            function editarPedido(id, id_cliente, id_suela, color, cantidad) {
+                document.getElementById('form-pedido').action = '/actualizar_pedido';
+                document.getElementById('input-pedido-id').value = id;
+                document.getElementById('select-pedido-cliente').value = id_cliente;
+                document.getElementById('select-pedido-suela').value = id_suela;
+
+                actualizarColorPedido();
+
+                document.getElementById('input-pedido-cantidad').value = cantidad;
+                document.getElementById('titulo-form-pedido').innerHTML = '<i class="fa-solid fa-pen-to-square text-purple-400"></i> Editar Pedido #' + id;
+                document.getElementById('btn-pedido-submit').innerText = 'Modificar Orden e Inventario';
+                document.getElementById('btn-pedido-cancelar').classList.remove('hidden');
+            }
+
+            function resetFormPedido() {
+                document.getElementById('form-pedido').action = '/crear_pedido';
+                document.getElementById('input-pedido-id').value = '';
+                document.getElementById('form-pedido').reset();
+                actualizarColorPedido();
+
+                document.getElementById('titulo-form-pedido').innerHTML = '<i class="fa-solid fa-cart-plus text-purple-400"></i> Crear Pedido';
+                document.getElementById('btn-pedido-submit').innerText = 'Procesar y Descontar Stock';
+                document.getElementById('btn-pedido-cancelar').classList.add('hidden');
+            }
+        </script>
+        {% endif %}
+
+        {% if seccion == 'suelas' %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-[#18181c] p-6 rounded-2xl border border-gray-800 h-fit">
+                <h2 class="text-xl font-bold text-white mb-6" id="titulo-form-suela">
+                    <i class="fa-solid fa-plus-circle text-purple-400"></i> Añadir al Catálogo
+                </h2>
+
+                <form id="form-suela" action="/crear_suela" method="post" class="space-y-4">
+                    <input type="hidden" name="id_suela" id="input-suela-id">
+
+                    <div id="contenedor-tipo-registro">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Modalidad de Registro Técnico</label>
+                        <select name="tipo_registro" id="select-tipo-registro" onchange="alternarModalidadTalla(this.value)" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
+                            <option value="individual">Talla Única / Individual</option>
+                            <option value="rango">Expansión por Rango de Tallas (Masivo)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Referencia</label>
+                            <input type="text" name="referencia" id="input-suela-referencia" placeholder="Ej: Titan-Hike" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+
+                        <div id="wrapper-talla-individual">
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Talla</label>
+                            <input type="number" name="talla" id="input-suela-talla" placeholder="Ej: 38" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 hidden" id="wrapper-tallas-rango">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Talla Inicial</label>
+                            <input type="number" name="talla_inicial" id="input-suela-talla-inicial" placeholder="Desde: 32" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Talla Final</label>
+                            <input type="number" name="talla_final" id="input-suela-talla-final" placeholder="Hasta: 42" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Color de Base</label>
+                        <select name="color" id="input-suela-color" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
+                            <option value="">-- Elige un Color --</option>
+                            <option value="Todos los Colores">🌈 Todos los Colores (Disponible en surtido)</option>
+                            {% for col in colores %}
+                            <option value="{{ col[1] }}">{{ col[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Material Base</label>
+                        <select name="id_material" id="select-suela-material" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                            <option value="">-- Elige un Material --</option>
+                            {% for m in materiales %}
+                            <option value="{{ m[0] }}">{{ m[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Precio Unidad ($)</label>
+                            <input type="text" name="precio" id="input-suela-precio" placeholder="Ej: 22500" oninput="this.value = this.value.replace(/[^0-9.]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Stock Inicial</label>
+                            <input type="number" name="stock" id="input-suela-stock" placeholder="Ej: 100" min="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-suela-submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-xl text-sm transition">
+                        Insertar Nueva Referencia
+                    </button>
+                    <button type="button" id="btn-suela-cancelar" onclick="resetFormSuela()" class="w-full bg-gray-800 text-gray-300 font-semibold py-2 rounded-xl text-xs transition hidden mt-2">
+                        Cancelar Edición de Referencia
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2">
+                <h2 class="text-xl font-bold text-white mb-6">Estado de Inventario Real en Bodega</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for s in suelas %}
+                        {% if s[3] == 0 %}
+                            {% set border_color = "border-red-600" %}
+                            {% set badge = "AGOTADO" %}
+                            {% set badge_color = "bg-red-500/10 text-red-400" %}
+                        {% elif s[3] <= 15 %}
+                            {% set border_color = "border-amber-500" %}
+                            {% set badge = "BAJO STOCK" %}
+                            {% set badge_color = "bg-amber-500/10 text-amber-400" %}
+                        {% else %}
+                            {% set border_color = "border-emerald-600" %}
+                            {% set badge = "DISPONIBLE" %}
+                            {% set badge_color = "bg-emerald-500/10 text-emerald-400" %}
+                        {% endif %}
+
+                        <div class="bg-[#18181c] p-6 rounded-2xl border {{ border_color }} flex flex-col justify-between h-60 transition-all">
+                            <div class="flex justify-between items-start">
+                                <span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider {{ badge_color }}">{{ badge }}</span>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="editarSuela('{{ s[0] }}', '{{ s[1] }}', '{{ s[2] }}', '{{ s[5] }}', '{{ s[6] }}', '{{ s[4] }}', '{{ s[3] }}')" class="text-purple-400 hover:text-purple-300 text-xs font-semibold">
+                                        <i class="fa-solid fa-edit"></i> Editar
+                                    </button>
+                                    <form action="/eliminar_suela" method="post" class="inline" onclick="return confirm('¿Deseas eliminar permanentemente este producto del catálogo?')">
+                                        <input type="hidden" name="id_suela" value="{{ s[0] }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-500 text-xs">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="my-1">
+                                <h3 class="text-xl font-extrabold text-white tracking-tight">{{ s[1] }}</h3>
+                                <p class="text-sm text-gray-400 mt-0.5">Talla: {{ s[2] }} | Color: {{ s[5] }}</p>
+                                <p class="text-xs text-purple-400 font-medium mt-0.5">Precio Unitario: ${{ s[4] }}</p>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-2 border-t border-gray-800/60">
+                                <form action="/actualizar_stock/{{ s[0] }}" method="post" class="flex items-center gap-1.5">
+                                    <input type="number" name="nuevo_stock" placeholder="Stock" required min="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-20 bg-[#121214] border border-gray-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none">
+                                    <button type="submit" class="bg-gray-800 text-purple-400 p-1 rounded-lg text-xs hover:bg-gray-700 transition">
+                                        <i class="fa-solid fa-rotate"></i>
+                                    </button>
+                                </form>
+                                <div class="flex justify-end items-baseline gap-1">
+                                    <span class="text-2xl font-black text-white">{{ s[3] }}</span>
+                                    <span class="text-xs font-semibold text-gray-400">Pares</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function alternarModalidadTalla(tipo) {
+                if (tipo === 'rango') {
+                    document.getElementById('wrapper-talla-individual').classList.add('hidden');
+                    document.getElementById('input-suela-talla').removeAttribute('required');
+                    document.getElementById('wrapper-tallas-rango').classList.remove('hidden');
+                    document.getElementById('input-suela-talla-inicial').setAttribute('required', 'required');
+                    document.getElementById('input-suela-talla-final').setAttribute('required', 'required');
+                } else {
+                    document.getElementById('wrapper-tallas-rango').classList.add('hidden');
+                    document.getElementById('input-suela-talla-inicial').removeAttribute('required');
+                    document.getElementById('input-suela-talla-final').removeAttribute('required');
+                    document.getElementById('wrapper-talla-individual').classList.remove('hidden');
+                    document.getElementById('input-suela-talla').setAttribute('required', 'required');
+                }
+            }
+
+            function editarSuela(id, ref, talla, color, id_material, precio, stock) {
+                document.getElementById('form-suela').action = '/actualizar_suela';
+                document.getElementById('input-suela-id').value = id;
+                document.getElementById('input-suela-referencia').value = ref;
+                document.getElementById('input-suela-color').value = color;
+                document.getElementById('select-suela-material').value = id_material;
+                document.getElementById('input-suela-precio').value = precio;
+                document.getElementById('input-suela-stock').value = stock;
+
+                document.getElementById('select-tipo-registro').value = 'individual';
+                alternarModalidadTalla('individual');
+                document.getElementById('contenedor-tipo-registro').classList.add('hidden');
+                document.getElementById('input-suela-talla').value = talla;
+
+                document.getElementById('titulo-form-suela').innerHTML = '<i class="fa-solid fa-edit text-purple-400"></i> Editar Referencia #' + id;
+                document.getElementById('btn-suela-submit').innerText = 'Guardar Cambios de Suela';
+                document.getElementById('btn-suela-cancelar').classList.remove('hidden');
+            }
+
+            function resetFormSuela() {
+                document.getElementById('form-suela').action = '/crear_suela';
+                document.getElementById('input-suela-id').value = '';
+                document.getElementById('form-suela').reset();
+                document.getElementById('contenedor-tipo-registro').classList.remove('hidden');
+                alternarModalidadTalla('individual');
+                document.getElementById('titulo-form-suela').innerHTML = '<i class="fa-solid fa-plus-circle text-purple-400"></i> Añadir al Catálogo';
+                document.getElementById('btn-suela-submit').innerText = 'Insertar Nueva Referencia';
+                document.getElementById('btn-suela-cancelar').classList.add('hidden');
+            }
+        </script>
+        {% endif %}
+
+        {% if seccion == 'reportes' %}
+        <div class="bg-[#18181c] p-8 rounded-2xl border border-gray-800 max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-white mb-6">Analítica: Consumo Acumulado por Empresa</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-xs font-bold uppercase text-gray-400">
+                            <th class="pb-4">Razón Social del Cliente</th>
+                            <th class="pb-4">Total Pares Comprados</th>
+                            <th class="pb-4">Órdenes Procesadas</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800/50 text-sm text-gray-300">
+                        {% for r in reporte_pares %}
+                        <tr>
+                            <td class="py-4 text-white font-semibold">{{ r[0] }}</td>
+                            <td class="py-4 font-black text-purple-400">{{ r[1] if r[1] else 0 }} pares</td>
+                            <td class="py-4">
+                                <span class="bg-gray-800 px-3 py-1 rounded-full text-xs font-bold text-gray-400">{{ r[2] }} orden(es)</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
