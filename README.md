@@ -46,7 +46,7 @@ El módulo permite realizar operaciones CRUD completas: crear nuevos pedidos, co
 ├── README.md             # Documentación principal
 ├── CHANGELOG.md          # Historial de cambios
 └── .gitignore            # Archivos excluidos del control de versiones
-
+```
 ## Problemas Arquitectónicos Identificados
 En la evaluación inicial del sistema monolítico, se identificaron los siguientes problemas principales que justifican la refactorización:
 1. **Falta de Separación de Responsabilidades:** Consultas SQL, lógica de negocio y controladores web agrupados sin una estructura modular clara.
