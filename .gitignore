@@ -1,2 +1,28 @@
-READ.ME
-README.md
+# Dependencias
+node_modules/
+.venv/
+venv/
+__pycache__/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Compilacion y cobertura
+dist/
+build/
+coverage/
+
+# IDE y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
