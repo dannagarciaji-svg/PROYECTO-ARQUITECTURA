@@ -72,3 +72,23 @@ Controlar las operaciones simultáneas sobre el campo `stock_disponible` de la t
 ## 5. Conclusiones
 
 La re-arquitectura del módulo garantiza una separación limpia de responsabilidades[cite: 2]. Priorizar Mantenibilidad, Confiabilidad y Eficiencia de Ejecución asegurará la estabilidad del sistema a medida que la fábrica de suelas escale sus operaciones.
+
+---
+
+## 6. Componentes y Responsabilidades de la Nueva Arquitectura
+
+| Componente | Responsabilidad Principal | Dependencias | Paquete / Archivo Representativo |
+| :--- | :--- | :--- | :--- |
+| **Controladores (Routes)** | Recibir las peticiones HTTP de los formularios, coordinar llamadas y renderizar las plantillas web. | Services | `src/routes/` |
+| **Servicios (Services)** | Procesar la lógica de negocio, validaciones de stock y transacciones del dominio de la fábrica. | Repositories | `src/services/` |
+| **Repositorios (Repositories)** | Encapsular la persistencia y la ejecución de consultas SQL hacia SQL Server mediante Pyodbc. | Base de Datos | `src/repositories/` |
+| **Configuración (Config)** | Centralizar las credenciales y la cadena de conexión a la base de datos corporativa. | Pyodbc | `src/config.py` |
+
+---
+
+## 7. Resumen de Decisiones de Refactorización (ADRs)
+
+Las decisiones adoptadas para guiar la evolución del código son:
+1. **[ADR-001: Implementación del Patrón Repositorio](adr/adr-001-patron-repositorio.md)** — Aislar las consultas SQL de las rutas web para mejorar la mantenibilidad y seguridad.
+2. **[ADR-002: Separación de la Lógica de Negocio en Servicios](adr/adr-002-capa-servicios.md)** — Extraer las validaciones de inventario y reglas de pedidos a servicios dedicados.
+3. **[ADR-003: Desacoplamiento de la Configuración de Base de Datos](adr/adr-003-desacoplamiento-config.md)** — Modularizar la conexión a SQL Server.
