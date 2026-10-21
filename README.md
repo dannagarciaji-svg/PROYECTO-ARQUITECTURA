@@ -46,3 +46,14 @@ El módulo permite realizar operaciones CRUD completas: crear nuevos pedidos, co
 ├── README.md             # Documentación principal
 ├── CHANGELOG.md          # Historial de cambios
 └── .gitignore            # Archivos excluidos del control de versiones
+
+## Problemas Arquitectónicos Identificados
+En la evaluación inicial del sistema monolítico, se identificaron los siguientes problemas principales que justifican la refactorización:
+1. **Falta de Separación de Responsabilidades:** Consultas SQL, lógica de negocio y controladores web agrupados sin una estructura modular clara.
+2. **Consultas SQL Directas en Rutas Web:** Alto acoplamiento con la base de datos y riesgo de mantenibilidad.
+3. **Lógica de Negocio Acoplada:** Validaciones de inventario e inserciones ejecutadas directamente dentro de los endpoints HTTP.
+4. **Hardcoding de Configuración:** Cadena de conexión a SQL Server fija dentro del código fuente.
+
+## Documentación de Arquitectura
+Para consultar el detalle de la arquitectura objetivo, la tabla de componentes, los escenarios de calidad y los registros de decisiones (ADRs), dirígete a:
+[Documento de Arquitectura Principal](docs/arquitectura.md)
