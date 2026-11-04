@@ -75,3 +75,41 @@ A partir del análisis realizado, se establecieron tres atributos de calidad com
 La mantenibilidad permitirá mejorar la organización de las responsabilidades dentro del sistema separando rutas, servicios y repositorios y facilitar la implementación de cambios futuros de forma independiente. Por su parte, la confiabilidad ayudará a garantizar que la información de los pedidos y el inventario se mantenga consistente, implementando un manejo adecuado de transacciones mediante pyodbc para evitar registros incompletos o errores en las existencias. Finalmente, la eficiencia de ejecución permitirá gestionar de manera precisa y controlada las operaciones sobre el inventario que realiza la persona encargada, asegurando que las validaciones de stock prevengan cualquier inconsistencia o valores negativos en bodega.
 
 Estos atributos se utilizaron como base para establecer las decisiones arquitectónicas y los ADRs que guían la evolución del sistema. De esta manera, se logró mejorar la estructura y la modularidad del módulo, manteniendo las funcionalidades operativas actuales y evitando realizar modificaciones innecesarias para la fábrica.
+
+---
+
+---
+
+## 6. Componentes y Responsabilidades de la Nueva Arquitectura
+
+| Componente | Responsabilidad Principal | Dependencias | Paquete / Archivo Representativo |
+| :--- | :--- | :--- | :--- |
+| **Controladores (Routes)** | Recibir las peticiones HTTP de los formularios, coordinar llamadas y renderizar las plantillas web. | Services | `src/routes/` |
+| **Servicios (Services)** | Procesar la lógica de negocio, validaciones de stock y transacciones del dominio de la fábrica. | Repositories | `src/services/` |
+| **Repositorios (Repositories)** | Encapsular la persistencia y la ejecución de consultas SQL hacia SQL Server mediante Pyodbc. | Base de Datos | `src/repositories/` |
+| **Configuración (Config)** | Centralizar las credenciales y la cadena de conexión a la base de datos corporativa. | Pyodbc | `src/config.py` |
+
+---
+
+## 7. Resumen de Decisiones de Refactorización (ADRs)
+
+Las decisiones adoptadas para guiar la evolución del código son:
+1. **[ADR-001: Implementación del Patrón Repositorio](adr/adr-001-patron-repositorio.md)** — Aislar las consultas SQL de las rutas web para mejorar la mantenibilidad y seguridad.
+2. **[ADR-002: Separación de la Lógica de Negocio en Servicios](adr/adr-002-capa-servicios.md)** — Extraer las validaciones de inventario y reglas de pedidos a servicios dedicados.
+3. **[ADR-003: Desacoplamiento de la Configuración de Base de Datos](adr/adr-003-desacoplamiento-config.md)** — Modularizar la conexión a SQL Server.
+
+---
+
+## 9. Diagramas de Arquitectura (C4 y Despliegue - Semana 15)
+
+### 9.1. Diagrama de Contexto (Nivel 1)
+📁 [Ver Diagrama de Contexto (c4_contexto.png)](diagramas/c4_contexto.png)
+
+### 9.2. Diagrama de Contenedores (Nivel 2)
+📁 [Ver Diagrama de Contenedores (c4_contenedores.png)](diagramas/c4_contenedores.png)
+
+### 9.3. Diagrama de Componentes (Nivel 3)
+📁 [Ver Diagrama de Componentes (c4_componentes.png)](diagramas/c4_componentes.png)
+
+### 9.4. Diagrama de Despliegue (Entorno Local)
+📁 [Ver Diagrama de Despliegue (despliegue.png)](diagramas/c4_despliegue.png)
