@@ -41,13 +41,12 @@ Controlar las operaciones simultáneas sobre el campo `stock_disponible` de la t
 * **Medida de respuesta:** No se registran pedidos sin detalle ni queda inventario descontado si el proceso falla.
 
 ### Escenario 3: Eficiencia de Ejecución
-* **Estímulo:** Dos usuarios realizan pedidos simultáneos de la misma suela con stock limitado.
-* **Fuente del estímulo:** Dos solicitudes al mismo tiempo desde la interfaz.
-* **Entorno:** Operación normal del sistema.
-* **Artefacto:** Ruta `/crear_pedido`, tabla `Suelas` (`stock_disponible`), `Pedidos` y `DetallePedido`.
-* **Respuesta esperada:** Gestionar las solicitudes asegurando que la cantidad no supere el stock disponible.
-* **Medida de respuesta:** El inventario final coincide con los pedidos procesados y `stock_disponible` no queda negativo.
-
+* **Estímulo:** La persona encargada intenta registrar un pedido cuya cantidad solicitada supera el stock disponible actual en la bodega. 
+* **Fuente del estímulo:** Solicitud ingresada por la única operadora desde la interfaz web del sistema. 
+* **Entorno:** Operación cotidiana donde la administradora gestiona y registra las órdenes de los clientes. 
+* **Artefacto:** La ruta /crear_pedido, la capa de servicios, el repositorio suela_repository.py y la tabla Suelas (stock_disponible).
+* **Respuesta esperada:** El sistema procesa la validación del inventario a través de la capa de servicios antes de impactar la base de datos, detectando inmediatamente si las existencias son insuficientes.
+* **Medida de respuesta:** El sistema bloquea el registro del pedido de forma limpia, despliega una alerta de stock insuficiente y evita que el inventario quede con valores negativos o inconsistentes. 
 ---
 
 ## 4. Especificación del Caso de Uso Principal (CU-01 Crear Pedido)
@@ -71,4 +70,8 @@ Controlar las operaciones simultáneas sobre el campo `stock_disponible` de la t
 
 ## 5. Conclusiones
 
-La re-arquitectura del módulo garantiza una separación limpia de responsabilidades[cite: 2]. Priorizar Mantenibilidad, Confiabilidad y Eficiencia de Ejecución asegurará la estabilidad del sistema a medida que la fábrica de suelas escale sus operaciones.
+A partir del análisis realizado, se establecieron tres atributos de calidad como principales para la re-arquitectura del módulo de Órdenes y Pedidos: Mantenibilidad, confiabilidad y eficiencia de ejecución. La elección de estos atributos se encuentra relacionada con las principales dificultades y situaciones encontradas en el funcionamiento actual del módulo.
+
+La mantenibilidad permitirá mejorar la organización de las responsabilidades dentro del sistema —separando rutas, servicios y repositorios— y facilitar la implementación de cambios futuros de forma independiente. Por su parte, la confiabilidad ayudará a garantizar que la información de los pedidos y el inventario se mantenga consistente, implementando un manejo adecuado de transacciones mediante pyodbc para evitar registros incompletos o errores en las existencias. Finalmente, la eficiencia de ejecución permitirá gestionar de manera precisa y controlada las operaciones sobre el inventario que realiza la persona encargada, asegurando que las validaciones de stock prevengan cualquier inconsistencia o valores negativos en bodega.
+
+Estos atributos se utilizaron como base para establecer las decisiones arquitectónicas y los ADRs que guían la evolución del sistema. De esta manera, se logró mejorar la estructura y la modularidad del módulo, manteniendo las funcionalidades operativas actuales y evitando realizar modificaciones innecesarias para la fábrica.
