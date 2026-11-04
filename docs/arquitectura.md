@@ -112,4 +112,4 @@ Las decisiones adoptadas para guiar la evolución del código son:
 📁 [Ver Diagrama de Componentes (c4_componentes.png)](diagramas/c4_componentes.png)
 
 ### 9.4. Diagrama de Despliegue (Entorno Local)
-📁 [Ver Diagrama de Despliegue (despliegue.png)](diagramas/c4_despliegue.png)
+📁 [Ver Diagrama de Despliegue (c4_despliegue.png)](diagramas/c4_despliegue.png)
