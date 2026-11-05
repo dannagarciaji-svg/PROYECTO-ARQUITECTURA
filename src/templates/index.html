@@ -218,7 +218,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Color</label>
-                            <input type="text" name="color" id="input-pedido-color" placeholder="Se asigna según la suela" readonly required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-not-allowed">
+                            <input type="text" name="color" id="input-pedido-color" placeholder="Se asigna según la suela" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
                         </div>
 
                         <div>
@@ -301,12 +301,25 @@
                 const opcionSeleccionada = selectorSuelaPedido.options[selectorSuelaPedido.selectedIndex];
 
                 if (opcionSeleccionada && opcionSeleccionada.value !== '') {
-                    campoColorPedido.value = opcionSeleccionada.dataset.color || '';
+                    const colorCatalogo = opcionSeleccionada.dataset.color || '';
+                    
+                    if (colorCatalogo === 'Todos los Colores') {
+                        campoColorPedido.value = '';
+                        campoColorPedido.removeAttribute('readonly');
+                        campoColorPedido.classList.remove('cursor-not-allowed');
+                        campoColorPedido.placeholder = 'Escribe el color solicitado por el cliente...';
+                    } else {
+                        campoColorPedido.value = colorCatalogo;
+                        campoColorPedido.setAttribute('readonly', true);
+                        campoColorPedido.classList.add('cursor-not-allowed');
+                    }
                 } else {
                     campoColorPedido.value = '';
+                    campoColorPedido.removeAttribute('readonly');
+                    campoColorPedido.classList.remove('cursor-not-allowed');
+                    campoColorPedido.placeholder = 'Se asigna según la suela';
                 }
             }
-            
 
             selectorSuelaPedido.addEventListener('change', actualizarColorPedido);
 
@@ -317,6 +330,7 @@
                 document.getElementById('select-pedido-suela').value = id_suela;
 
                 actualizarColorPedido();
+                campoColorPedido.value = color;
 
                 document.getElementById('input-pedido-cantidad').value = cantidad;
                 document.getElementById('titulo-form-pedido').innerHTML = '<i class="fa-solid fa-pen-to-square text-purple-400"></i> Editar Pedido #' + id;
@@ -347,34 +361,15 @@
                 <form id="form-suela" action="/crear_suela" method="post" class="space-y-4">
                     <input type="hidden" name="id_suela" id="input-suela-id">
 
-                    <div id="contenedor-tipo-registro">
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Modalidad de Registro Técnico</label>
-                        <select name="tipo_registro" id="select-tipo-registro" onchange="alternarModalidadTalla(this.value)" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
-                            <option value="individual">Talla Única / Individual</option>
-                            <option value="rango">Expansión por Rango de Tallas (Masivo)</option>
-                        </select>
-                    </div>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Referencia</label>
                             <input type="text" name="referencia" id="input-suela-referencia" placeholder="Ej: Titan-Hike" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
                         </div>
 
-                        <div id="wrapper-talla-individual">
+                        <div>
                             <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Talla</label>
-                            <input type="number" name="talla" id="input-suela-talla" placeholder="Ej: 38" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 hidden" id="wrapper-tallas-rango">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Talla Inicial</label>
-                            <input type="number" name="talla_inicial" id="input-suela-talla-inicial" placeholder="Desde: 32" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Talla Final</label>
-                            <input type="number" name="talla_final" id="input-suela-talla-final" placeholder="Hasta: 42" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                            <input type="number" name="talla" id="input-suela-talla" placeholder="Ej: 38" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
                         </div>
                     </div>
 
@@ -383,8 +378,22 @@
                         <select name="color" id="input-suela-color" required class="w-full bg-[#121214] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500">
                             <option value="">-- Elige un Color --</option>
                             <option value="Todos los Colores">🌈 Todos los Colores (Disponible en surtido)</option>
+                            
+                            {% set colores_fijos = ['Blanco', 'Negro', 'Beige', 'Marrón', 'Azul Oscuro', 'Gris', 'Rojo', 'Verde Militar', 'Camel', 'Vinotinto'] %}
+                            {% set colores_unicos = [] %}
+                            
+                            {% for c_fijo in colores_fijos %}
+                                {% if c_fijo not in colores_unicos %}
+                                    {% if colores_unicos.append(c_fijo) %}{% endif %}
+                                    <option value="{{ c_fijo }}">{{ c_fijo }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            
                             {% for col in colores %}
-                            <option value="{{ col[1] }}">{{ col[1] }}</option>
+                                {% if col[1] and col[1] != 'Todos los Colores' and col[1] not in colores_unicos %}
+                                    {% if colores_unicos.append(col[1]) %}{% endif %}
+                                    <option value="{{ col[1] }}">{{ col[1] }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -478,22 +487,6 @@
         </div>
 
         <script>
-            function alternarModalidadTalla(tipo) {
-                if (tipo === 'rango') {
-                    document.getElementById('wrapper-talla-individual').classList.add('hidden');
-                    document.getElementById('input-suela-talla').removeAttribute('required');
-                    document.getElementById('wrapper-tallas-rango').classList.remove('hidden');
-                    document.getElementById('input-suela-talla-inicial').setAttribute('required', 'required');
-                    document.getElementById('input-suela-talla-final').setAttribute('required', 'required');
-                } else {
-                    document.getElementById('wrapper-tallas-rango').classList.add('hidden');
-                    document.getElementById('input-suela-talla-inicial').removeAttribute('required');
-                    document.getElementById('input-suela-talla-final').removeAttribute('required');
-                    document.getElementById('wrapper-talla-individual').classList.remove('hidden');
-                    document.getElementById('input-suela-talla').setAttribute('required', 'required');
-                }
-            }
-
             function editarSuela(id, ref, talla, color, id_material, precio, stock) {
                 document.getElementById('form-suela').action = '/actualizar_suela';
                 document.getElementById('input-suela-id').value = id;
@@ -502,10 +495,6 @@
                 document.getElementById('select-suela-material').value = id_material;
                 document.getElementById('input-suela-precio').value = precio;
                 document.getElementById('input-suela-stock').value = stock;
-
-                document.getElementById('select-tipo-registro').value = 'individual';
-                alternarModalidadTalla('individual');
-                document.getElementById('contenedor-tipo-registro').classList.add('hidden');
                 document.getElementById('input-suela-talla').value = talla;
 
                 document.getElementById('titulo-form-suela').innerHTML = '<i class="fa-solid fa-edit text-purple-400"></i> Editar Referencia #' + id;
@@ -517,8 +506,6 @@
                 document.getElementById('form-suela').action = '/crear_suela';
                 document.getElementById('input-suela-id').value = '';
                 document.getElementById('form-suela').reset();
-                document.getElementById('contenedor-tipo-registro').classList.remove('hidden');
-                alternarModalidadTalla('individual');
                 document.getElementById('titulo-form-suela').innerHTML = '<i class="fa-solid fa-plus-circle text-purple-400"></i> Añadir al Catálogo';
                 document.getElementById('btn-suela-submit').innerText = 'Insertar Nueva Referencia';
                 document.getElementById('btn-suela-cancelar').classList.add('hidden');
@@ -539,7 +526,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-800/50 text-sm text-gray-300">
-                        {% for r in reporte_pares %}
+                        {% for r in reporte_clientes %}
                         <tr>
                             <td class="py-4 text-white font-semibold">{{ r[0] }}</td>
                             <td class="py-4 font-black text-purple-400">{{ r[1] if r[1] else 0 }} pares</td>
